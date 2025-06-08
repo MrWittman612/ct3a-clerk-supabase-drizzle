@@ -1,3 +1,4 @@
+"use client";
 import { api as clientApi } from "~/trpc/react";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { type postsTable } from "~/server/db/schema";
