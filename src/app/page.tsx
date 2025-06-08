@@ -8,14 +8,15 @@ import {
 
 import { api as serverApi, HydrateClient } from "~/trpc/server";
 import PostsListClient from "./_components/PostsListClient";
+import { CreatePostForm } from "./_components/CreatePostForm";
 
 export default async function page() {
   const initialPosts = await serverApi.post.getAll();
   return (
     <HydrateClient>
       <main className="container mx-auto p-4">
-        <header className="flex items-center justify-between border-8 border-b py-4">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-[5rem]">
+        <header className="flex items-center justify-between border-8 border-b px-6 py-8">
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-7xl">
             My Awesome App (App Router)
           </h1>
           <div>
@@ -39,7 +40,7 @@ export default async function page() {
         <div className="mt-8">
           <SignedIn>
             {/* Pass server-fetched user ID or let client component get it */}
-            {/* <CreatePostForm /> */}
+            <CreatePostForm />
           </SignedIn>
           <SignedOut>
             <p className="text-center text-gray-600">
