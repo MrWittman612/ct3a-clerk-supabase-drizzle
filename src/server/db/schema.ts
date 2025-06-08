@@ -1,10 +1,9 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
+import { serial } from "drizzle-orm/pg-core";
 // import { serial } from "drizzle-orm/mysql-core";
 import {
-  integer,
   pgTable,
   pgTableCreator,
   timestamp,
@@ -23,10 +22,7 @@ export const createTable = pgTableCreator(
 );
 
 export const postsTable = pgTable("posts", {
-  id: integer("id")
-    .primaryKey()
-    .notNull()
-    .default(sql`nextval('posts_id_seq')`),
+  id: serial("id").primaryKey(),
   userId: varchar("user_id", { length: 255 }).notNull(), // Clerk User ID
   title: varchar("title", { length: 255 }).notNull(),
   content: text("content"),

@@ -1,26 +1,46 @@
 import { z } from "zod";
+import { eq } from "drizzle-orm";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { posts } from "~/server/db/schema";
+import { postsTable as posts } from "~/server/db/schema";
 
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    return ctx.db.select().from(posts).orderBy(posts.createdAt);
+  }),
+
+  getById: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.db
+        .select()
+        .from(posts)
+        .where(eq(posts.id, input.id))
+        .limit(1);
+      return post[0];
     }),
 
   create: publicProcedure
-    .input(z.object({ name: z.string().min(1) }))
+    .input(
+      z.object({
+        title: z.string().min(1),
+        content: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(posts).values({
-        name: input.name,
-      });
+      const newPost = await ctx.db
+        .insert(posts)
+        .values({
+          title: input.title,
+          content: input.content,
+          userId: ctx.auth.userId,
+        })
+        .returning();
+
+      return newPost;
     }),
 
-  getLatest: publicProcedure.query(async ({ ctx }) => {
+  getLatest: publicProcedure.qisuery(async ({ ctx }) => {
     const post = await ctx.db.query.posts.findFirst({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],
     });
