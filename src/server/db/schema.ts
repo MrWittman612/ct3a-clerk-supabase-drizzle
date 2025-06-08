@@ -2,7 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import { serial } from "drizzle-orm/pg-core";
-// import { serial } from "drizzle-orm/mysql-core";
+
 import {
   pgTable,
   pgTableCreator,
