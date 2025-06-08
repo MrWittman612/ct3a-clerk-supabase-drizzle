@@ -9,7 +9,7 @@ import {
 import { api as serverApi, HydrateClient } from "~/trpc/server";
 import PostsListClient from "./_components/PostsListClient";
 
-export default async function Home() {
+export default async function page() {
   const initialPosts = await serverApi.post.getAll();
   return (
     <HydrateClient>
