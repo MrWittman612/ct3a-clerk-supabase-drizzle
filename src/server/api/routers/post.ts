@@ -55,11 +55,13 @@ export const postRouter = createTRPCRouter({
         .from(posts)
         .where(eq(posts.id, input.id));
 
-      if (!post[0] || post[0].userId !== ctx.auth.userId) {
+      if (!post[0] || post[0].userId !== +ctx.auth.userId) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Post not found or you do not have permission!!",
         });
       }
+      await ctx.db.delete(posts).where(eq(posts.id, input.id));
+      return { success: true, id: input.id };
     }),
 });
