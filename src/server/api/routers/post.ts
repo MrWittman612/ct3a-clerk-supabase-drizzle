@@ -55,11 +55,17 @@ export const postRouter = createTRPCRouter({
         throw new Error("User not authenticated");
       }
       const post = await ctx.db
-        .select({ userId: posts.id })
+        .select({ userId: posts.userId })
         .from(posts)
         .where(eq(posts.id, input.id));
 
-      if (!post[0] || post[0].userId !== +ctx.auth.userId) {
+      const noPost = !post[0];
+      const postUserId = post[0]?.userId;
+      const userId = ctx.auth.userId;
+
+      const userOwnsThePost = postUserId !== userId;
+
+      if (noPost || userOwnsThePost) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Post not found or you do not have permission!!",
