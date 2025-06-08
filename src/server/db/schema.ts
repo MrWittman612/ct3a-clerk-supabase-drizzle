@@ -2,12 +2,14 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import { sql } from "drizzle-orm";
+// import { serial } from "drizzle-orm/mysql-core";
 import {
-  index,
   integer,
+  pgTable,
   pgTableCreator,
   timestamp,
   varchar,
+  text,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -20,15 +22,15 @@ export const createTable = pgTableCreator(
   (name) => `ct3a-clerk-supabase-drizzle_${name}`,
 );
 
-export const posts = createTable(
-  "post",
-  {
-    id: integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: varchar({ length: 256 }),
-    createdAt: timestamp({ withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
-  },
-  (t) => [index("name_idx").on(t.name)],
-);
+export const postsTable = pgTable("posts", {
+  id: integer("id")
+    .primaryKey()
+    .notNull()
+    .default(sql`nextval('posts_id_seq')`),
+  userId: varchar("user_id", { length: 255 }).notNull(), // Clerk User ID
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
