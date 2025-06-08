@@ -7,9 +7,10 @@ import {
 } from "@clerk/nextjs";
 
 import { api as serverApi, HydrateClient } from "~/trpc/server";
+import PostsListClient from "./_components/PostsListClient";
 
 export default async function Home() {
-  const initialPost = await serverApi.post.getAll();
+  const initialPosts = await serverApi.post.getAll();
   return (
     <HydrateClient>
       <main className="container mx-auto p-4">
@@ -50,7 +51,7 @@ export default async function Home() {
         <div className="mt-6">
           <h2 className="mb-3 text-2xl font-bold">All Posts</h2>
           {/* Pass initialPosts to a client component for display and potential client-side interactions */}
-          {/* <PostsListClient initialPosts={initialPosts} /> */}
+          <PostsListClient initialPosts={initialPosts} />
         </div>
       </main>
     </HydrateClient>
