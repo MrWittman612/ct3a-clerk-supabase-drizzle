@@ -5,7 +5,6 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
-import Link from "next/link";
 
 import { api as serverApi, HydrateClient } from "~/trpc/server";
 
@@ -36,6 +35,23 @@ export default async function Home() {
             </SignedIn>
           </div>
         </header>
+        <div className="mt-8">
+          <SignedIn>
+            {/* Pass server-fetched user ID or let client component get it */}
+            {/* <CreatePostForm /> */}
+          </SignedIn>
+          <SignedOut>
+            <p className="text-center text-gray-600">
+              Please sign in to create posts.
+            </p>
+          </SignedOut>
+        </div>
+
+        <div className="mt-6">
+          <h2 className="mb-3 text-2xl font-bold">All Posts</h2>
+          {/* Pass initialPosts to a client component for display and potential client-side interactions */}
+          {/* <PostsListClient initialPosts={initialPosts} /> */}
+        </div>
       </main>
     </HydrateClient>
   );
