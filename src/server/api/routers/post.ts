@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { desc, eq } from "drizzle-orm";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { postsTable as posts } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
 
@@ -21,7 +25,7 @@ export const postRouter = createTRPCRouter({
       return post[0];
     }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -44,7 +48,7 @@ export const postRouter = createTRPCRouter({
       return newPost;
     }),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       if (!ctx.auth.userId) {
