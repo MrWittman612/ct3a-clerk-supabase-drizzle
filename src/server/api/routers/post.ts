@@ -1,12 +1,13 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { postsTable as posts } from "~/server/db/schema";
+import { TRPCError } from "@trpc/server";
 
 export const postRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return ctx.db.select().from(posts).orderBy(posts.createdAt);
+    return ctx.db.select().from(posts).orderBy(desc(posts.createdAt));
   }),
 
   getById: publicProcedure
@@ -28,6 +29,9 @@ export const postRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) {
+        throw new Error("User not authenticated");
+      }
       const newPost = await ctx.db
         .insert(posts)
         .values({
@@ -40,11 +44,22 @@ export const postRouter = createTRPCRouter({
       return newPost;
     }),
 
-  getLatest: publicProcedure.qisuery(async ({ ctx }) => {
-    const post = await ctx.db.query.posts.findFirst({
-      orderBy: (posts, { desc }) => [desc(posts.createdAt)],
-    });
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) {
+        throw new Error("User not authenticated");
+      }
+      const post = await ctx.db
+        .select({ userId: posts.id })
+        .from(posts)
+        .where(eq(posts.id, input.id));
 
-    return post ?? null;
-  }),
+      if (!post[0] || post[0].userId !== ctx.auth.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Post not found or you do not have permission!!",
+        });
+      }
+    }),
 });
