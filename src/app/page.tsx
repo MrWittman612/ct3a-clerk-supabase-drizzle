@@ -7,8 +7,8 @@ import {
 } from "@clerk/nextjs";
 
 import { api as serverApi, HydrateClient } from "~/trpc/server";
-import PostsListClient from "./_components/PostsListClient";
-import { CreatePostForm } from "./_components/CreatePostForm";
+import PostsListClient from "../components/PostsListClient";
+import { CreatePostForm } from "../components/CreatePostForm";
 
 export default async function page() {
   const initialPosts = await serverApi.post.getAll();
