@@ -1,4 +1,4 @@
-import { type Config } from "drizzle-kit";
+// import { type Config } from "drizzle-kit";
 
 import { env } from "~/env";
 
@@ -10,4 +10,4 @@ export default {
     url: env.DATABASE_URL,
   },
   tablesFilter: ["ct3a-clerk-supabase-drizzle_*"],
-} satisfies Config;
+} as const;
