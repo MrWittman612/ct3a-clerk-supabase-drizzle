@@ -5,6 +5,7 @@ import { type postsTable } from "~/server/db/schema";
 
 import React from "react";
 import type { InferSelectModel } from "drizzle-orm";
+import { toast } from "sonner";
 
 type Post = InferSelectModel<typeof postsTable>;
 
@@ -29,11 +30,11 @@ export default function PostsListClient({
 
   const deletePostMutation = clientApi.post.delete.useMutation({
     onSuccess: (data) => {
-      alert(`Post ${data.id} deleted`);
+      toast.success(`Post ${data.id} deleted`);
       void utils.post.getAll.invalidate();
     },
     onError: (err) => {
-      alert(`Error deleting post: ${err.message}`);
+      toast.error(`Error deleting post: ${err.message}`);
     },
   });
 
