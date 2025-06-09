@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { api as clientApi } from "~/trpc/react"; // For Client Component hooks
 import { useRouter } from "next/navigation"; // For App Router navigation
+import { toast } from "sonner";
 
 export function CreatePostForm() {
   const [title, setTitle] = useState("");
@@ -20,10 +21,10 @@ export function CreatePostForm() {
       // For App Router, often better to router.refresh() or invalidate specific queries
       void utils.post.getAll.invalidate(); // This will refetch if PostsListClient uses useQuery
       // router.refresh(); // Alternative: re-runs Server Component data fetching for the current route
-      alert("Post created!");
+      toast.success("Post created!");
     },
     onError: (error) => {
-      alert(`Error creating post: ${error.message}`);
+      toast.error(`Error creating post: ${error.message}`);
       if (error.data?.code === "UNAUTHORIZED") {
         // Handle unauthorized, e.g. redirect to sign-in
         router.push("/sign-in");
@@ -34,7 +35,7 @@ export function CreatePostForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      alert("Title cannot be empty");
+      toast.warning("Title cannot be empty");
       return;
     }
     createPostMutation.mutate({ title, content });
